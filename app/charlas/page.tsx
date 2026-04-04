@@ -73,14 +73,29 @@ export default function CharlasPage() {
               const readmeText = await readmeRes.text()
               
               const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
-              const descMatch = readmeText.match(/^##\s+Descripción\s*\n+(.+)$/m)
-              const speakerMatch = readmeText.match(/^##\s+Speaker\s*\n+(.+)$/m)
-              const fechaMatch = readmeText.match(/^##\s+Fecha\s*\n+(\d{4}-\d{2}-\d{2})/m)
-              const tagsMatch = readmeText.match(/^##\s+Tags\s*\n+(.+)$/m)
-              const slidesMatch = readmeText.match(/slides\.pdf/i)
-              const codigoMatch = readmeText.match(/github\.com.*(codigo|source|código)/i)
+              const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/i)
+              const speakerMatch = readmeText.match(/^##\s*Speaker\s*\n+-?\s*\*?Speaker:\*?\s*(.+)$/im) 
+              const fechaMatch = readmeText.match(/(\d{1,2})\s+de\s+(\w+),?\s+(\d{4})/i)
+              const tagsMatch = readmeText.match(/^##\s*Tags\s*\n+([^\n#]+)/im)
+              const slidesMatch = readmeText.match(/slides\.pdf|slides\.pptx|presentation/i)
+              const codigoMatch = readmeText.match(/codigo|código|source|proyecto/i)
+              const duracionMatch = readmeText.match(/Duración:\s*(\d+)\s*min/i)
 
-              const fecha = fechaMatch ? fechaMatch[1] : nombreCarpeta.split("-")[0] + "-" + nombreCarpeta.split("-")[1] + "-01"
+              let fecha = ""
+              if (fechaMatch) {
+                const meses: Record<string, string> = {
+                  "enero": "01", "febrero": "02", "marzo": "03", "abril": "04",
+                  "mayo": "05", "junio": "06", "julio": "07", "agosto": "08",
+                  "septiembre": "09", "octubre": "10", "noviembre": "11", "diciembre": "12"
+                }
+                const mes = meses[fechaMatch[2].toLowerCase()] || "01"
+                fecha = `${fechaMatch[3]}-${mes}-${fechaMatch[1].padStart(2, "0")}`
+              } else {
+                const parts = nombreCarpeta.split("-")
+                fecha = parts[0] + "-" + (parts[1] || "01") + "-01"
+              }
+
+              const duracion = duracionMatch ? duracionMatch[1] + " min" : "45 min"
 
               todasLasCharlas.push({
                 id: idCharla,
@@ -89,8 +104,8 @@ export default function CharlasPage() {
                 descripcion: descMatch ? descMatch[1].trim() : "Sin descripción",
                 speaker: speakerMatch ? speakerMatch[1].trim() : "Por definir",
                 fecha: fecha,
-                duracion: "45 min",
-                tags: tagsMatch ? tagsMatch[1].split(",").map((t: string) => t.trim()).slice(0, 3) : [],
+                duracion: duracion,
+                tags: tagsMatch ? tagsMatch[1].split(",").map((t: string) => t.trim()).filter(Boolean).slice(0, 3) : [],
                 tieneSlides: !!slidesMatch,
                 tieneCodigo: !!codigoMatch,
                 repoUrl: carpeta.html_url,
