@@ -3,19 +3,30 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
-import { Home, ExternalLink, Code, Presentation, Calendar, User, Tag } from "lucide-react"
+import { Home, ExternalLink, Code, Presentation, Calendar, User, Loader2 } from "lucide-react"
 
-interface Charla {
-  id: string
+interface CharlaInfo {
   titulo: string
   descripcion: string
-  fecha: string
+  speaker?: string
+  fecha?: string
+  tieneSlides: boolean
+  tieneCodigo: boolean
+  tags: string[]
+}
+
+interface CharlaConCarpeta {
+  id: string
   evento: string
+  titulo: string
+  descripcion: string
   speaker: string
+  fecha: string
   duracion: string
   tags: string[]
   tieneSlides: boolean
   tieneCodigo: boolean
+  repoUrl: string
 }
 
 interface Evento {
@@ -25,64 +36,106 @@ interface Evento {
   color: string
 }
 
-interface Manifest {
-  charlas: Charla[]
-  eventos: Record<string, Evento>
+const EVENTOS: Record<string, Evento> = {
+  devcafe: { nombre: "DevCafé", descripcion: "Encuentros de desarrollo", emoji: "☕", color: "#ff6b35" },
+  birras: { nombre: "Birras", descripcion: "Infraestructura y redes", emoji: "🍻", color: "#00d9ff" },
+  workshop: { nombre: "Workshop", descripcion: "Hands-on y capacitación", emoji: "💻", color: "#a855f7" },
 }
 
+const BASE_URL = "https://api.github.com/repos/andestech1/Presentaciones/contents/charlas"
+
 export default function CharlasPage() {
-  const [manifest, setManifest] = useState<Manifest | null>(null)
+  const [charlas, setCharlas] = useState<CharlaConCarpeta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch("https://raw.githubusercontent.com/andestech1/Presentaciones/main/charlas/manifest.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setManifest(data)
-        setLoading(false)
-      })
-      .catch(() => {
-        setError("Error al cargar las presentaciones")
-        setLoading(false)
-      })
+    const cargarCharlas = async () => {
+      const todasLasCharlas: CharlaConCarpeta[] = []
+
+      for (const [eventoKey, eventoInfo] of Object.entries(EVENTOS)) {
+        try {
+          const res = await fetch(`${BASE_URL}/${eventoKey}`)
+          if (!res.ok) continue
+          
+          const carpetas = await res.json()
+          
+          for (const carpeta of carpetas) {
+            if (carpeta.type !== "dir") continue
+            
+            const nombreCarpeta = carpeta.name
+            const idCharla = nombreCarpeta
+            
+            try {
+              const readmeRes = await fetch(`${BASE_URL}/${eventoKey}/${nombreCarpeta}/README.md`)
+              if (!readmeRes.ok) continue
+              
+              const readmeText = await readmeRes.text()
+              
+              const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
+              const descMatch = readmeText.match(/^##\s+Descripción\s*\n+(.+)$/m)
+              const speakerMatch = readmeText.match(/^##\s+Speaker\s*\n+(.+)$/m)
+              const fechaMatch = readmeText.match(/^##\s+Fecha\s*\n+(\d{4}-\d{2}-\d{2})/m)
+              const tagsMatch = readmeText.match(/^##\s+Tags\s*\n+(.+)$/m)
+              const slidesMatch = readmeText.match(/slides\.pdf/i)
+              const codigoMatch = readmeText.match(/github\.com.*(codigo|source|código)/i)
+
+              const fecha = fechaMatch ? fechaMatch[1] : nombreCarpeta.split("-")[0] + "-" + nombreCarpeta.split("-")[1] + "-01"
+
+              todasLasCharlas.push({
+                id: idCharla,
+                evento: eventoKey,
+                titulo: tituloMatch ? tituloMatch[1].trim() : nombreCarpeta,
+                descripcion: descMatch ? descMatch[1].trim() : "Sin descripción",
+                speaker: speakerMatch ? speakerMatch[1].trim() : "Por definir",
+                fecha: fecha,
+                duracion: "45 min",
+                tags: tagsMatch ? tagsMatch[1].split(",").map((t: string) => t.trim()).slice(0, 3) : [],
+                tieneSlides: !!slidesMatch,
+                tieneCodigo: !!codigoMatch,
+                repoUrl: carpeta.html_url,
+              })
+            } catch {
+              continue
+            }
+          }
+        } catch {
+          continue
+        }
+      }
+
+      setCharlas(todasLasCharlas)
+      setLoading(false)
+    }
+
+    cargarCharlas()
   }, [])
 
-  const getEventoInfo = (eventoKey: string) => {
-    return manifest?.eventos[eventoKey] || { nombre: eventoKey, emoji: "📁", color: "#888" }
-  }
-
   const formatFecha = (fecha: string) => {
-    const date = new Date(fecha)
-    return date.toLocaleDateString("es-AR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
+    try {
+      const date = new Date(fecha)
+      return date.toLocaleDateString("es-AR", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    } catch {
+      return fecha
+    }
   }
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Cargando presentaciones...</p>
         </div>
       </div>
     )
   }
 
-  if (error || !manifest) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="p-8 text-center">
-          <p className="text-destructive">{error || "Error al cargar"}</p>
-        </Card>
-      </div>
-    )
-  }
-
-  const sortedCharlas = [...manifest.charlas].sort(
+  const sortedCharlas = [...charlas].sort(
     (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
   )
 
@@ -110,10 +163,10 @@ export default function CharlasPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedCharlas.map((charla) => {
-              const evento = getEventoInfo(charla.evento)
+              const evento = EVENTOS[charla.evento] || { nombre: charla.evento, emoji: "📁", color: "#888" }
               return (
                 <Card
-                  key={charla.id}
+                  key={`${charla.evento}-${charla.id}`}
                   className="p-6 bg-card/50 border-border hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10 flex flex-col"
                 >
                   <div className="flex items-center gap-2 mb-3">
@@ -130,16 +183,18 @@ export default function CharlasPage() {
                     {charla.descripcion}
                   </p>
 
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {charla.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  {charla.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {charla.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-1">
@@ -148,35 +203,25 @@ export default function CharlasPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      <span>{charla.speaker}</span>
+                      <span className="truncate">{charla.speaker}</span>
                     </div>
                   </div>
 
                   <div className="flex gap-2 mt-auto pt-4 border-t border-border">
                     {charla.tieneSlides && (
-                      <a
-                        href={`https://github.com/andestech1/Presentaciones/tree/main/charlas/${charla.evento}/${charla.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
+                      <span className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Presentation className="w-4 h-4" />
                         Slides
-                      </a>
+                      </span>
                     )}
                     {charla.tieneCodigo && (
-                      <a
-                        href={`https://github.com/andestech1/Presentaciones/tree/main/charlas/${charla.evento}/${charla.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
+                      <span className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Code className="w-4 h-4" />
                         Código
-                      </a>
+                      </span>
                     )}
                     <a
-                      href={`https://github.com/andestech1/Presentaciones/tree/main/charlas/${charla.evento}/${charla.id}`}
+                      href={charla.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary ml-auto"
