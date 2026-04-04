@@ -11,7 +11,7 @@ export function Footer() {
       { name: "Staff", href: "#staff" },
       { name: "Comunidad", href: "#about" },
       { name: "Eventos", href: "#eventos" },
-      { name: "Reglamento", href: "https://andestech.com/reglamento", external: true },
+      { name: "Charlas", href: "https://andestech.xyz/charlas", external: true },
     ],
   }
 

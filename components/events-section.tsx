@@ -56,7 +56,7 @@ export function EventsSection() {
           <div className="p-5 sm:p-8 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-lg max-w-2xl mx-auto">
             <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">¿Buscas las charlas anteriores?</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 text-pretty">
-              entra a este apartado para ver el repositorio con todas nuestras charlas
+              Entra a este apartado para ver el repositorio con todas nuestras charlas
             </p>
             <a
               href="https://andestech.xyz/charlas"
