@@ -48,27 +48,35 @@ export default function CharlasPage() {
   const [charlas, setCharlas] = useState<CharlaConCarpeta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [debugLog, setDebugLog] = useState<string[]>([])
 
   useEffect(() => {
     const cargarCharlas = async () => {
       const todasLasCharlas: CharlaConCarpeta[] = []
+      const logs: string[] = []
 
       for (const [eventoKey, eventoInfo] of Object.entries(EVENTOS)) {
         try {
           const res = await fetch(`${BASE_URL}/${eventoKey}`)
-          if (!res.ok) continue
+          if (!res.ok) {
+            logs.push(`Error fetching ${eventoKey}: ${res.status}`)
+            continue
+          }
           
           const carpetas = await res.json()
+          logs.push(`${eventoKey}: ${carpetas.length} carpetas`)
           
           for (const carpeta of carpetas) {
             if (carpeta.type !== "dir") continue
             
             const nombreCarpeta = carpeta.name
-            const idCharla = nombreCarpeta
             
             try {
               const readmeRes = await fetch(`${BASE_URL}/${eventoKey}/${nombreCarpeta}/README.md`)
-              if (!readmeRes.ok) continue
+              if (!readmeRes.ok) {
+                logs.push(`No README: ${nombreCarpeta}`)
+                continue
+              }
               
               const readmeText = await readmeRes.text()
               
@@ -98,7 +106,7 @@ export default function CharlasPage() {
               const duracion = duracionMatch ? duracionMatch[1] + " min" : "45 min"
 
               todasLasCharlas.push({
-                id: idCharla,
+                id: nombreCarpeta,
                 evento: eventoKey,
                 titulo: tituloMatch ? tituloMatch[1].trim() : nombreCarpeta,
                 descripcion: descMatch ? descMatch[1].trim() : "Sin descripción",
@@ -110,15 +118,19 @@ export default function CharlasPage() {
                 tieneCodigo: !!codigoMatch,
                 repoUrl: carpeta.html_url,
               })
-            } catch {
+              logs.push(`✓ ${nombreCarpeta}: ${tituloMatch ? tituloMatch[1].trim() : 'sin título'}`)
+            } catch (e) {
+              logs.push(`Error reading ${nombreCarpeta}: ${e}`)
               continue
             }
           }
-        } catch {
+        } catch (e) {
+          logs.push(`Error ${eventoKey}: ${e}`)
           continue
         }
       }
 
+      setDebugLog(logs)
       setCharlas(todasLasCharlas)
       setLoading(false)
     }
@@ -153,6 +165,9 @@ export default function CharlasPage() {
   const sortedCharlas = [...charlas].sort(
     (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
   )
+
+  // Debug: mostrar logs
+  console.log("Debug log:", debugLog)
 
   return (
     <div className="min-h-screen bg-background">
