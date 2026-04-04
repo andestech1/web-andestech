@@ -90,9 +90,19 @@ async function fetchCharlas(): Promise<Charla[]> {
           const readmeText = atob(readmeContent.content)
 
           const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
-          const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/)
+          
+          const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/) 
+          const speakerAltMatch = readmeText.match(/^-\s*\*\*Speaker:\*\*\s*(.+)$/m)
+          const speaker = speakerMatch ? speakerMatch[1] : (speakerAltMatch ? speakerAltMatch[1] : "Speaker anónimo")
+          
           const duracionMatch = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)
-          const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/im)
+          const duracionAltMatch = readmeText.match(/^-\s*\*\*Duración:\*\*\s*(.+)$/m)
+          const duracion = duracionMatch ? duracionMatch[1] : (duracionAltMatch ? duracionAltMatch[1] : "45 min")
+          
+          const descSection = readmeText.match(/^##\s*Descripción\s*\n+([\s\S]*?)(?=^##|\n\n|$)/im)
+          const descripcion = descSection 
+            ? descSection[1].replace(/^-\s+.+$/gm, "").replace(/\n+/g, " ").trim()
+            : ""
 
           let tieneSlides = false
           let tieneCodigo = false
@@ -129,16 +139,16 @@ async function fetchCharlas(): Promise<Charla[]> {
           const year = fechaMatch ? fechaMatch[1] : ""
           const month = fechaMatch ? fechaMatch[2] : ""
 
-          const firstParagraph = readmeText.split("\n").find(line => line.length > 20 && !line.startsWith("#") && !line.startsWith("**"))
+          const primeraLineaNoVacia = readmeText.split("\n").find(line => line.length > 20 && !line.startsWith("#") && !line.startsWith("**"))
 
           const charla: Charla = {
             id: talk.name,
             titulo: tituloMatch ? tituloMatch[1] : talk.name,
-            descripcion: descMatch ? descMatch[1].trim() : (firstParagraph || "Sin descripción"),
+            descripcion: descripcion || (primeraLineaNoVacia || "Sin descripción"),
             fecha: `${year}-${month}-01`,
             evento: evento.name,
-            speaker: speakerMatch ? speakerMatch[1] : "Speaker anónimo",
-            duracion: duracionMatch ? duracionMatch[1] : "45 min",
+            speaker: speaker,
+            duracion: duracion,
             tags: [],
             tieneSlides,
             tieneCodigo,
