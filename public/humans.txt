@@ -1,0 +1,9 @@
+/* TEAM */
+Developer: Maria Eugenia Oyarse
+GitHub: https://github.com/Vanetizen22
+Location: Mendoza, Argentina
+
+/* SITE */
+Last update: 2026/03/20
+Standards: HTML5, CSS3, Next.js
+Components: v0.dev, shadcn/ui
