@@ -1,9 +1,8 @@
 "use client"
 
-import { FileCode, Calendar, Download, Github, FileText, Eye } from "lucide-react"
+import { FileCode, Calendar, Download, Github } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { useState } from "react"
 
 interface CharlaCardProps {
   charlar: {
@@ -29,10 +28,7 @@ interface CharlaCardProps {
 }
 
 export function CharlaCard({ charlar, evento }: CharlaCardProps) {
-  const [showPreview, setShowPreview] = useState(false)
   const githubUrl = `https://github.com/andestech1/Presentaciones/tree/main/${charlar.path}`
-  
-  const isPdf = charlar.slidesName?.toLowerCase().endsWith(".pdf")
 
   return (
     <div
@@ -45,44 +41,6 @@ export function CharlaCard({ charlar, evento }: CharlaCardProps) {
         className="absolute top-0 left-0 right-0 h-1"
         style={{ backgroundColor: evento.color }}
       />
-
-      {charlar.tieneSlides && (
-        <div className="relative h-40 bg-muted/30 border-b border-border">
-          {showPreview && charlar.slidesUrl ? (
-            isPdf ? (
-              <iframe
-                src={charlar.slidesUrl}
-                className="w-full h-full"
-                title="Preview"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                <FileText className="w-16 h-16" />
-              </div>
-            )
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full gap-2">
-              <FileText className="w-12 h-12 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{charlar.slidesName}</span>
-              <button
-                onClick={() => setShowPreview(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs rounded-lg transition-colors"
-              >
-                <Eye className="w-3 h-3" />
-                Previsualizar
-              </button>
-            </div>
-          )}
-          {showPreview && (
-            <button
-              onClick={() => setShowPreview(false)}
-              className="absolute top-2 right-2 p-1 bg-background/80 rounded-lg text-xs hover:bg-background"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-      )}
 
       <div className="p-5">
         <div className="flex items-center gap-3 mb-3">
@@ -133,7 +91,7 @@ export function CharlaCard({ charlar, evento }: CharlaCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 bg-secondary/50 hover:bg-secondary rounded-lg text-secondary-foreground transition-colors"
-              title="Descargar slides"
+              title={`Descargar ${charlar.slidesName}`}
             >
               <Download className="w-4 h-4" />
             </a>
