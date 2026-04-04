@@ -51,6 +51,22 @@ export function EventsSection() {
             Ver Todos los Eventos
           </Button>
         </div>
+        
+        <div className="mt-10 sm:mt-16 text-center">
+          <div className="p-5 sm:p-8 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-lg max-w-2xl mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">¿Buscas las charlas anteriores?</h3>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 text-pretty">
+              entra a este apartado para ver el repositorio con todas nuestras charlas
+            </p>
+            <a
+              href="https://andestech.xyz/charlas"
+              className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105"
+            >
+              Charlas
+            </a>
+          </div>
+        </div>
+
       </div>
     </section>
   )
