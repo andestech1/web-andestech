@@ -29,98 +29,126 @@ interface Charla {
 async function fetchCharlas(): Promise<Charla[]> {
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN
 
+  console.log("Iniciando carga de presentaciones...")
+
   const response = await fetch("https://api.github.com/repos/andestech1/Presentaciones/contents/charlas", {
     headers: {
       Accept: "application/vnd.github.v3+json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
-    next: { revalidate: 3600 }
   })
+
+  console.log("Response estado:", response.status)
 
   if (!response.ok) {
     if (response.status === 404) return []
-    throw new Error("Error fetching talks")
+    throw new Error(`Error fetching talks: ${response.status}`)
   }
 
   const contents = await response.json()
+  console.log("Carpetas de eventos:", contents.map((c: { name: string }) => c.name))
+  
   const talks: Charla[] = []
 
   for (const evento of contents) {
     if (evento.type !== "dir") continue
+    console.log(`Procesando evento: ${evento.name}`)
 
-    const eventoResponse = await fetch(evento.url, {
-      headers: {
-        Accept: "application/vnd.github.v3+json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      }
-    })
-    if (!eventoResponse.ok) continue
-
-    const eventoContents = await eventoResponse.json()
-
-    for (const talk of eventoContents) {
-      if (talk.type !== "dir") continue
-
-      const readmeUrl = `https://api.github.com/repos/andestech1/Presentaciones/contents/${talk.path}/README.md`
-      const readmeResponse = await fetch(readmeUrl, {
+    try {
+      const eventoResponse = await fetch(evento.url, {
         headers: {
           Accept: "application/vnd.github.v3+json",
           ...(token && { Authorization: `Bearer ${token}` }),
         }
       })
+      if (!eventoResponse.ok) continue
 
-      if (!readmeResponse.ok) continue
+      const eventoContents = await eventoResponse.json()
+      console.log(`  ${evento.name}: ${eventoContents.length} carpetas`)
 
-      const readmeContent = await readmeResponse.json()
-      const readmeText = atob(readmeContent.content)
+      for (const talk of eventoContents) {
+        if (talk.type !== "dir") continue
 
-      const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
-      const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/)
-      const duracionMatch = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)
-      const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/im)
+        try {
+          const readmeUrl = `https://api.github.com/repos/andestech1/Presentaciones/contents/${talk.path}/README.md`
+          const readmeResponse = await fetch(readmeUrl, {
+            headers: {
+              Accept: "application/vnd.github.v3+json",
+              ...(token && { Authorization: `Bearer ${token}` }),
+            }
+          })
 
-      const filesResponse = await fetch(talk.url, {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          ...(token && { Authorization: `Bearer ${token}` }),
+          if (!readmeResponse.ok) {
+            console.log(`  skip: ${talk.name} - no README`)
+            continue
+          }
+
+          const readmeContent = await readmeResponse.json()
+          const readmeText = atob(readmeContent.content)
+
+          const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
+          const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/)
+          const duracionMatch = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)
+          const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/im)
+
+          let tieneSlides = false
+          let tieneCodigo = false
+
+          try {
+            const filesResponse = await fetch(talk.url, {
+              headers: {
+                Accept: "application/vnd.github.v3+json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+              }
+            })
+
+            if (filesResponse.ok) {
+              const files = await filesResponse.json()
+              tieneSlides = files.some((f: { name: string }) =>
+                f.name.endsWith(".pdf") || f.name.endsWith(".ppt") || f.name.endsWith(".pptx")
+              )
+              tieneCodigo = files.some((f: { name: string }) =>
+                f.name === "codigo" || f.name.startsWith("codigo-") || f.name.endsWith(".zip")
+              )
+            }
+          } catch (e) {
+            console.log(`  error files: ${talk.name}`, e)
+          }
+
+          const fechaMatch = talk.name.match(/(\d{4})-(\d{2})/)
+          const year = fechaMatch ? fechaMatch[1] : ""
+          const month = fechaMatch ? fechaMatch[2] : ""
+
+          const firstParagraph = readmeText.split("\n").find(line => line.length > 20 && !line.startsWith("#") && !line.startsWith("**"))
+
+          const charla: Charla = {
+            id: talk.name,
+            titulo: tituloMatch ? tituloMatch[1] : talk.name,
+            descripcion: descMatch ? descMatch[1].trim() : (firstParagraph || "Sin descripción"),
+            fecha: `${year}-${month}-01`,
+            evento: evento.name,
+            speaker: speakerMatch ? speakerMatch[1] : "Speaker anónimo",
+            duracion: duracionMatch ? duracionMatch[1] : "45 min",
+            tags: [],
+            tieneSlides,
+            tieneCodigo,
+            path: talk.path,
+          }
+          
+          talks.push(charla)
+          console.log(`  ✓ ${talk.name}: ${charla.titulo}`)
+        } catch (e) {
+          console.log(`  error talk: ${talk.name}`, e)
+          continue
         }
-      })
-
-      let tieneSlides = false
-      let tieneCodigo = false
-
-      if (filesResponse.ok) {
-        const files = await filesResponse.json()
-        tieneSlides = files.some((f: { name: string }) =>
-          f.name.endsWith(".pdf") || f.name.endsWith(".ppt") || f.name.endsWith(".pptx")
-        )
-        tieneCodigo = files.some((f: { name: string }) =>
-          f.name === "codigo" || f.name.startsWith("codigo-") || f.name.endsWith(".zip")
-        )
       }
-
-      const fechaMatch = talk.name.match(/(\d{4})-(\d{2})/)
-      const year = fechaMatch ? fechaMatch[1] : ""
-      const month = fechaMatch ? fechaMatch[2] : ""
-
-      const firstParagraph = readmeText.split("\n").find(line => line.length > 20 && !line.startsWith("#") && !line.startsWith("**"))
-
-      talks.push({
-        id: talk.name,
-        titulo: tituloMatch ? tituloMatch[1] : talk.name,
-        descripcion: descMatch ? descMatch[1].trim() : (firstParagraph || "Sin descripción"),
-        fecha: `${year}-${month}-01`,
-        evento: evento.name,
-        speaker: speakerMatch ? speakerMatch[1] : "Speaker anónimo",
-        duracion: duracionMatch ? duracionMatch[1] : "45 min",
-        tags: [],
-        tieneSlides,
-        tieneCodigo,
-        path: talk.path,
-      })
+    } catch (e) {
+      console.log(`  error evento: ${evento.name}`, e)
+      continue
     }
   }
 
+  console.log(`Total charlas cargadas: ${talks.length}`)
   return talks.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
 }
 
@@ -131,8 +159,14 @@ export function CharlasSection() {
 
   useEffect(() => {
     fetchCharlas()
-      .then(setCharlas)
-      .catch(() => setError("Error cargando las presentaciones"))
+      .then((data) => {
+        console.log("Charlas cargadas:", data.length)
+        setCharlas(data)
+      })
+      .catch((e) => {
+        console.error("Error fetching:", e)
+        setError("Error cargando las presentaciones")
+      })
       .finally(() => setLoading(false))
   }, [])
 
