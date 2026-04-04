@@ -24,6 +24,8 @@ interface Charla {
   tieneSlides: boolean
   tieneCodigo: boolean
   path: string
+  slidesUrl?: string
+  slidesName?: string
 }
 
 async function fetchCharlas(): Promise<Charla[]> {
@@ -93,6 +95,8 @@ async function fetchCharlas(): Promise<Charla[]> {
 
           let tieneSlides = false
           let tieneCodigo = false
+          let slidesUrl = ""
+          let slidesName = ""
 
           try {
             const filesResponse = await fetch(talk.url, {
@@ -104,9 +108,14 @@ async function fetchCharlas(): Promise<Charla[]> {
 
             if (filesResponse.ok) {
               const files = await filesResponse.json()
-              tieneSlides = files.some((f: { name: string }) =>
+              const slideFile = files.find((f: { name: string }) =>
                 f.name.endsWith(".pdf") || f.name.endsWith(".ppt") || f.name.endsWith(".pptx")
               )
+              if (slideFile) {
+                tieneSlides = true
+                slidesName = slideFile.name
+                slidesUrl = `https://raw.githubusercontent.com/andestech1/Presentaciones/main/${talk.path}/${slideFile.name}`
+              }
               tieneCodigo = files.some((f: { name: string }) =>
                 f.name === "codigo" || f.name.startsWith("codigo-") || f.name.endsWith(".zip")
               )
@@ -133,6 +142,8 @@ async function fetchCharlas(): Promise<Charla[]> {
             tieneSlides,
             tieneCodigo,
             path: talk.path,
+            slidesUrl,
+            slidesName,
           }
           
           talks.push(charla)
