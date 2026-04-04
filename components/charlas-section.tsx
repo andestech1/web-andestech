@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { CodeBackground } from "@/components/code-background"
 import { CharlaCard } from "@/components/charla-card"
+import { EventFilter } from "@/components/event-filter"
 import { Presentation } from "lucide-react"
 
 const EVENTOS: Record<string, { nombre: string; emoji: string; color: string }> = {
@@ -167,6 +168,7 @@ export function CharlasSection() {
   const [charlas, setCharlas] = useState<Charla[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState("all")
 
   useEffect(() => {
     fetchCharlas()
@@ -180,6 +182,10 @@ export function CharlasSection() {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  const filteredCharlas = selectedEvent === "all"
+    ? charlas
+    : charlas.filter(c => c.evento === selectedEvent)
 
   return (
     <section className="relative min-h-screen pt-20 pb-12 sm:pb-24 px-4">
@@ -217,8 +223,14 @@ export function CharlasSection() {
           </div>
         )}
 
+        <EventFilter
+          eventos={EVENTOS}
+          selectedEvent={selectedEvent}
+          onSelectEvent={setSelectedEvent}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {charlas.map((charla) => {
+          {filteredCharlas.map((charla) => {
             const evento = EVENTOS[charla.evento as keyof typeof EVENTOS] || EVENTOS.all
             return <CharlaCard key={charla.id} charlar={charla} evento={evento} />
           })}
