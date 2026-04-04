@@ -4,152 +4,140 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Home, ExternalLink, Code, Presentation, Calendar, User, Loader2 } from "lucide-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
-interface CharlaInfo {
-  titulo: string
-  descripcion: string
-  speaker?: string
-  fecha?: string
-  tieneSlides: boolean
-  tieneCodigo: boolean
-  tags: string[]
-}
-
-interface CharlaConCarpeta {
+interface Charla {
   id: string
-  evento: string
   titulo: string
   descripcion: string
-  speaker: string
   fecha: string
+  evento: string
+  speaker: string
   duracion: string
   tags: string[]
   tieneSlides: boolean
   tieneCodigo: boolean
-  repoUrl: string
+  path: string
 }
 
-interface Evento {
-  nombre: string
-  descripcion: string
-  emoji: string
-  color: string
+const EVENTOS: Record<string, { nombre: string; emoji: string; color: string }> = {
+  devcafe: { nombre: "DevCafé", emoji: "☕", color: "#ff6b35" },
+  birras: { nombre: "Birras", emoji: "🍻", color: "#00d9ff" },
+  workshop: { nombre: "Workshop", emoji: "💻", color: "#a855f7" },
 }
-
-const EVENTOS: Record<string, Evento> = {
-  devcafe: { nombre: "DevCafé", descripcion: "Encuentros de desarrollo", emoji: "☕", color: "#ff6b35" },
-  birras: { nombre: "Birras", descripcion: "Infraestructura y redes", emoji: "🍻", color: "#00d9ff" },
-  workshop: { nombre: "Workshop", descripcion: "Hands-on y capacitación", emoji: "💻", color: "#a855f7" },
-}
-
-const BASE_URL = "https://api.github.com/repos/andestech1/Presentaciones/contents/charlas"
 
 export default function CharlasPage() {
-  const [charlas, setCharlas] = useState<CharlaConCarpeta[]>([])
+  const [charlas, setCharlas] = useState<Charla[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [debugLog, setDebugLog] = useState<string[]>([])
 
   useEffect(() => {
-    const cargarCharlas = async () => {
-      const todasLasCharlas: CharlaConCarpeta[] = []
-      const logs: string[] = []
+    const fetchCharlas = async () => {
+      const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN
+      
+      try {
+        const response = await fetch("https://api.github.com/repos/andestech1/Presentaciones/contents/charlas", {
+          headers: {
+            Accept: "application/vnd.github.v3+json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        })
 
-      for (const [eventoKey, eventoInfo] of Object.entries(EVENTOS)) {
-        try {
-          const res = await fetch(`${BASE_URL}/${eventoKey}`)
-          if (!res.ok) {
-            logs.push(`Error fetching ${eventoKey}: ${res.status}`)
-            continue
-          }
-          
-          const carpetas = await res.json()
-          logs.push(`${eventoKey}: ${carpetas.length} carpetas`)
-          
-          for (const carpeta of carpetas) {
-            if (carpeta.type !== "dir") continue
-            
-            const nombreCarpeta = carpeta.name
-            
-            try {
-              const readmeRes = await fetch(`${BASE_URL}/${eventoKey}/${nombreCarpeta}/README.md`)
-              if (!readmeRes.ok) {
-                logs.push(`No README: ${nombreCarpeta}`)
-                continue
-              }
-              
-              const readmeText = await readmeRes.text()
-              
-              const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
-              const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/i)
-              const speakerMatch = readmeText.match(/^##\s*Speaker\s*\n+-?\s*\*?Speaker:\*?\s*(.+)$/im) 
-              const fechaMatch = readmeText.match(/(\d{1,2})\s+de\s+(\w+),?\s+(\d{4})/i)
-              const tagsMatch = readmeText.match(/^##\s*Tags\s*\n+([^\n#]+)/im)
-              const slidesMatch = readmeText.match(/slides\.pdf|slides\.pptx|presentation/i)
-              const codigoMatch = readmeText.match(/codigo|código|source|proyecto/i)
-              const duracionMatch = readmeText.match(/Duración:\s*(\d+)\s*min/i)
-
-              let fecha = ""
-              if (fechaMatch) {
-                const meses: Record<string, string> = {
-                  "enero": "01", "febrero": "02", "marzo": "03", "abril": "04",
-                  "mayo": "05", "junio": "06", "julio": "07", "agosto": "08",
-                  "septiembre": "09", "octubre": "10", "noviembre": "11", "diciembre": "12"
-                }
-                const mes = meses[fechaMatch[2].toLowerCase()] || "01"
-                fecha = `${fechaMatch[3]}-${mes}-${fechaMatch[1].padStart(2, "0")}`
-              } else {
-                const parts = nombreCarpeta.split("-")
-                fecha = parts[0] + "-" + (parts[1] || "01") + "-01"
-              }
-
-              const duracion = duracionMatch ? duracionMatch[1] + " min" : "45 min"
-
-              todasLasCharlas.push({
-                id: nombreCarpeta,
-                evento: eventoKey,
-                titulo: tituloMatch ? tituloMatch[1].trim() : nombreCarpeta,
-                descripcion: descMatch ? descMatch[1].trim() : "Sin descripción",
-                speaker: speakerMatch ? speakerMatch[1].trim() : "Por definir",
-                fecha: fecha,
-                duracion: duracion,
-                tags: tagsMatch ? tagsMatch[1].split(",").map((t: string) => t.trim()).filter(Boolean).slice(0, 3) : [],
-                tieneSlides: !!slidesMatch,
-                tieneCodigo: !!codigoMatch,
-                repoUrl: carpeta.html_url,
-              })
-              logs.push(`✓ ${nombreCarpeta}: ${tituloMatch ? tituloMatch[1].trim() : 'sin título'}`)
-            } catch (e) {
-              logs.push(`Error reading ${nombreCarpeta}: ${e}`)
-              continue
-            }
-          }
-        } catch (e) {
-          logs.push(`Error ${eventoKey}: ${e}`)
-          continue
+        if (!response.ok) {
+          throw new Error("Error fetching talks")
         }
+
+        const contents = await response.json()
+        const talks: Charla[] = []
+
+        for (const evento of contents) {
+          if (evento.type !== "dir") continue
+
+          const eventoResponse = await fetch(evento.url, {
+            headers: {
+              Accept: "application/vnd.github.v3+json",
+              ...(token && { Authorization: `Bearer ${token}` }),
+            }
+          })
+          if (!eventoResponse.ok) continue
+
+          const eventoContents = await eventoResponse.json()
+
+          for (const talk of eventoContents) {
+            if (talk.type !== "dir") continue
+
+            const readmeUrl = `https://api.github.com/repos/andestech1/Presentaciones/contents/${talk.path}/README.md`
+            const readmeResponse = await fetch(readmeUrl, {
+              headers: {
+                Accept: "application/vnd.github.v3+json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+              }
+            })
+
+            if (!readmeResponse.ok) continue
+
+            const readmeContent = await readmeResponse.json()
+            const readmeText = atob(readmeContent.content)
+
+            const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
+            const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/)
+            const duracionMatch = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)
+            const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([^\n#]+)/im)
+
+            const filesResponse = await fetch(talk.url, {
+              headers: {
+                Accept: "application/vnd.github.v3+json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+              }
+            })
+
+            let tieneSlides = false
+            let tieneCodigo = false
+
+            if (filesResponse.ok) {
+              const files = await filesResponse.json()
+              tieneSlides = files.some((f: { name: string }) =>
+                f.name.endsWith(".pdf") || f.name.endsWith(".ppt") || f.name.endsWith(".pptx")
+              )
+              tieneCodigo = files.some((f: { name: string }) =>
+                f.name === "codigo" || f.name.startsWith("codigo-") || f.name.endsWith(".zip")
+              )
+            }
+
+            const fechaMatch = talk.name.match(/(\d{4})-(\d{2})/)
+            const year = fechaMatch ? fechaMatch[1] : ""
+            const month = fechaMatch ? fechaMatch[2] : ""
+
+            const firstParagraph = readmeText.split("\n").find(line => line.length > 20 && !line.startsWith("#") && !line.startsWith("**"))
+
+            talks.push({
+              id: talk.name,
+              titulo: tituloMatch ? tituloMatch[1] : talk.name,
+              descripcion: descMatch ? descMatch[1].trim() : (firstParagraph || "Sin descripción"),
+              fecha: `${year}-${month}-01`,
+              evento: evento.name,
+              speaker: speakerMatch ? speakerMatch[1] : "Por definir",
+              duracion: duracionMatch ? duracionMatch[1] : "45 min",
+              tags: [],
+              tieneSlides,
+              tieneCodigo,
+              path: talk.path,
+            })
+          }
+        }
+
+        setCharlas(talks.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()))
+      } catch (e) {
+        setError("Error cargando las presentaciones")
+        console.error(e)
+      } finally {
+        setLoading(false)
       }
-
-      setDebugLog(logs)
-      setCharlas(todasLasCharlas)
-      setLoading(false)
     }
 
-    cargarCharlas()
+    fetchCharlas()
   }, [])
-
-  const formatFecha = (fecha: string) => {
-    try {
-      const date = new Date(fecha)
-      return date.toLocaleDateString("es-AR", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    } catch {
-      return fecha
-    }
-  }
 
   if (loading) {
     return (
@@ -161,13 +149,6 @@ export default function CharlasPage() {
       </div>
     )
   }
-
-  const sortedCharlas = [...charlas].sort(
-    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
-  )
-
-  // Debug: mostrar logs
-  console.log("Debug log:", debugLog)
 
   return (
     <div className="min-h-screen bg-background">
@@ -191,9 +172,23 @@ export default function CharlasPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="text-center py-12 text-destructive">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!error && charlas.length === 0 && (
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground">No hay presentaciones disponibles aún.</p>
+            </Card>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedCharlas.map((charla) => {
+            {charlas.map((charla) => {
               const evento = EVENTOS[charla.evento] || { nombre: charla.evento, emoji: "📁", color: "#888" }
+              const githubUrl = `https://github.com/andestech1/Presentaciones/tree/main/${charla.path}`
+              
               return (
                 <Card
                   key={`${charla.evento}-${charla.id}`}
@@ -213,23 +208,10 @@ export default function CharlasPage() {
                     {charla.descripcion}
                   </p>
 
-                  {charla.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {charla.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatFecha(charla.fecha)}</span>
+                      <span>{format(new Date(charla.fecha), "MMM yyyy", { locale: es })}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
@@ -251,7 +233,7 @@ export default function CharlasPage() {
                       </span>
                     )}
                     <a
-                      href={charla.repoUrl}
+                      href={githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary ml-auto"
@@ -263,12 +245,6 @@ export default function CharlasPage() {
               )
             })}
           </div>
-
-          {sortedCharlas.length === 0 && (
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">No hay presentaciones disponibles aún.</p>
-            </Card>
-          )}
         </div>
       </section>
     </div>
