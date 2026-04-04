@@ -89,20 +89,41 @@ async function fetchCharlas(): Promise<Charla[]> {
           const readmeContent = await readmeResponse.json()
           const readmeText = atob(readmeContent.content)
 
-          const tituloMatch = readmeText.match(/^#\s+(.+)$/m)
+          // Parsear frontmatter YAML
+          const frontmatterMatch = readmeText.match(/^---\n([\s\S]*?)\n---/)
+          let titulo = ""
+          let speaker = "Speaker anónimo"
+          let duracion = "45 min"
+          let descripcion = ""
           
-          const speakerMatch = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/) 
-          const speakerAltMatch = readmeText.match(/^-\s*\*\*Speaker:\*\*\s*(.+)$/m)
-          const speaker = speakerMatch ? speakerMatch[1] : (speakerAltMatch ? speakerAltMatch[1] : "Speaker anónimo")
+          if (frontmatterMatch) {
+            const fm = frontmatterMatch[1]
+            const tituloMatch = fm.match(/titulo:\s*["']?([^"'\n]+)["']?/)
+            const speakerMatch = fm.match(/speaker:\s*["']?([^"'\n]+)["']?/)
+            const duracionMatch = fm.match(/duracion:\s*["']?([^"'\n]+)["']?/)
+            
+            titulo = tituloMatch ? tituloMatch[1].trim() : ""
+            speaker = speakerMatch ? speakerMatch[1].trim() : "Speaker anónimo"
+            duracion = duracionMatch ? duracionMatch[1].trim() : "45 min"
+            
+            // Descripción después del frontmatter
+            const afterFm = readmeText.replace(frontmatterMatch[0], "").trim()
+            const descMatch = afterFm.match(/^##\s*Descripción\s*\n+([\s\S]*?)(?=^##|\n\n|$)/im)
+            descripcion = descMatch ? descMatch[1].replace(/^-\s+.+$/gm, "").replace(/\n+/g, " ").trim() : ""
+          } else {
+            // Fallback al formato anterior
+            titulo = readmeText.match(/^#\s+(.+)$/m)?.[1] || ""
+            speaker = readmeText.match(/\*\*Speaker:\*\*\s*(.+)/)?.[1] 
+              || readmeText.match(/^-\s*\*\*Speaker:\*\*\s*(.+)$/m)?.[1]
+              || "Speaker anónimo"
+            duracion = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)?.[1]
+              || readmeText.match(/^-\s*\*\*Duración:\*\*\s*(.+)$/m)?.[1]
+              || "45 min"
+            const descMatch = readmeText.match(/^##\s*Descripción\s*\n+([\s\S]*?)(?=^##|\n\n|$)/im)
+            descripcion = descMatch ? descMatch[1].replace(/^-\s+.+$/gm, "").replace(/\n+/g, " ").trim() : ""
+          }
           
-          const duracionMatch = readmeText.match(/\*\*Duración:\*\*\s*(.+)/)
-          const duracionAltMatch = readmeText.match(/^-\s*\*\*Duración:\*\*\s*(.+)$/m)
-          const duracion = duracionMatch ? duracionMatch[1] : (duracionAltMatch ? duracionAltMatch[1] : "45 min")
-          
-          const descSection = readmeText.match(/^##\s*Descripción\s*\n+([\s\S]*?)(?=^##|\n\n|$)/im)
-          const descripcion = descSection 
-            ? descSection[1].replace(/^-\s+.+$/gm, "").replace(/\n+/g, " ").trim()
-            : ""
+          if (!titulo) titulo = talk.name
 
           let tieneSlides = false
           let tieneCodigo = false
@@ -143,7 +164,7 @@ async function fetchCharlas(): Promise<Charla[]> {
 
           const charla: Charla = {
             id: talk.name,
-            titulo: tituloMatch ? tituloMatch[1] : talk.name,
+            titulo: titulo || talk.name,
             descripcion: descripcion || (primeraLineaNoVacia || "Sin descripción"),
             fecha: `${year}-${month}-01`,
             evento: evento.name,
