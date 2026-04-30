@@ -40,7 +40,7 @@ export function Footer() {
             </p>
             <div className="flex gap-5 sm:gap-4">
               <a
-                href="https://instagram.com/andestech"
+                href="https://instagram.com/andes.tech_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 transition-all hover:scale-110"
@@ -48,7 +48,7 @@ export function Footer() {
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com/company/andestech"
+                href="https://linkedin.com/company/andestech1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 transition-all hover:scale-110"
@@ -56,7 +56,7 @@ export function Footer() {
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="https://wa.me/5492611234567"
+                href="https://chat.whatsapp.com/BkfcHYpMJIiGSBnibubKGU"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 transition-all hover:scale-110"
@@ -64,7 +64,7 @@ export function Footer() {
                 <MessageCircle className="w-5 h-5" />
               </a>
               <a
-                href="https://t.me/andestech"
+                href="https://t.me/devcafemdz#"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 transition-all hover:scale-110"
