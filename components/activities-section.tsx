@@ -64,9 +64,9 @@ Además, buscamos visibilizar el talento tecnológico del interior del país y p
         </Card>
 
          <div className="mt-10 sm:mt-16 text-center">
-          <div className="p-5 sm:p-8 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-lg max-w-2xl mx-auto">
-            <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">¿Buscas las charlas anteriores?</h3>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 text-pretty">
+          <div className="p-6 sm:p-12 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-lg max-w-2xl mx-auto">
+            <h3 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">¿Buscas las charlas anteriores?</h3>
+            <p className="text-base sm:text-lg text-muted-foreground text-center text-pretty leading-relaxed">
               Entra a este apartado para ver el repositorio con todas nuestras charlas
             </p>
             <a
@@ -77,7 +77,7 @@ Además, buscamos visibilizar el talento tecnológico del interior del país y p
             </a>
           </div>
         </div>
-        
+
       </div>
     </section>
   )
