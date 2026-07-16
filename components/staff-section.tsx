@@ -33,7 +33,7 @@ export function StaffSection() {
     },
     {
       name: "Joaquin Rodriguez",
-      role: "Fundador",
+      role: "Colaborador",
       description: "Desarrollador de software",
       avatar: "/joaco.jpeg",
       initials: "JR",
@@ -51,7 +51,7 @@ export function StaffSection() {
     },
      {
       name: "Mariano Marino",
-      role: "Fundador",
+      role: "Colaborador",
       description: "Desarrollador de software",
       avatar: "/mariano.jpeg",
       initials: "MM",
@@ -60,7 +60,7 @@ export function StaffSection() {
     },
      {
       name: "Marisol Herrera", 
-      role: "Fundador",
+      role: "Colaborador",
       description: "Técnico universitario en redes y telecomunicaciones. UNCuyo. Analista Funcional Sr. en BYMA. Docente rn",
       avatar: "/marisol.png",
       initials: "MH",
@@ -78,7 +78,7 @@ export function StaffSection() {
     },
      {
       name: "Federico Vazques",
-      role: "Fundador",
+      role: "Colaborador",
       description: "Co-Fundador de Luxeo",
       avatar: "/fede.jpeg",
       initials: "FV",
@@ -87,7 +87,7 @@ export function StaffSection() {
     },
      {
       name: "Eugenia Oyarse",
-      role: "Fundador",
+      role: "Colaborador",
       description: "Customer Support en Kripton  - Técnica Superior en Laboratorio - Desarrollador de software",
       avatar: "/vane.jpeg",
       initials: "EO",
