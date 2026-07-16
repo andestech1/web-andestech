@@ -59,7 +59,7 @@ export function EventsSection() {
               Entra a este apartado para ver el repositorio con todas nuestras charlas
             </p>
             <a
-              href="https://andestech.xyz/charlas"
+              href="https://github.com/andestech1/Presentaciones/tree/main/charlas"
               className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105"
             >
               Charlas
