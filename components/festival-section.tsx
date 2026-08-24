@@ -52,7 +52,7 @@ export function FestivalSection() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <Button size="lg" variant="secondary" asChild>
+                  <Button size="lg" variant="secondary" asChild className="min-h-11">
                     <Link href="/festival">Conocé el Festival 2026</Link>
                   </Button>
                 </div>
@@ -79,7 +79,7 @@ export function FestivalSection() {
           <Card className="p-4 sm:p-8 bg-card/50 border-primary/30">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl font-bold">Ediciones Anteriores</h3>
-              <Link href="/festival#ediciones" className="text-primary hover:text-primary/80 flex items-center gap-2">
+              <Link href="/festival#ediciones" className="inline-flex min-h-11 items-center gap-2 text-primary hover:text-primary/80">
                 Ver todas
                 <ChevronRight className="w-4 h-4" />
               </Link>
@@ -112,7 +112,7 @@ export function FestivalSection() {
                   image: "/developers-coding-together.jpg",
                 },
               ].map((edition, index) => (
-                <div key={index} className="group cursor-pointer">
+                <div key={index} className="group">
                   <div className="relative h-40 rounded-lg overflow-hidden mb-3">
                     {edition.image ? (
                       <img
@@ -153,7 +153,7 @@ export function FestivalSection() {
 
           {/* Gallery Link */}
           <div className="mt-8 text-center">
-            <Button size="lg" variant="outline" asChild className="group bg-transparent">
+            <Button size="lg" variant="outline" asChild className="group min-h-11 bg-transparent">
               <Link href="/galeria">
                 <ImageIcon className="w-5 h-5 mr-2" />
                 Ver Galería de Fotos
