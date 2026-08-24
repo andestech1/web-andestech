@@ -55,7 +55,7 @@ export function ActivitiesSection() {
           </div>
         </div>
 
-        <Card className="mt-6 p-6 sm:mt-8 sm:p-12 bg-gradient-to-br from-primary/10 to-card border-primary/30 max-w-4xl mx-auto">
+        <Card className="mt-10 p-6 sm:mt-14 sm:p-12 bg-gradient-to-br from-primary/10 to-card border-primary/30 max-w-4xl mx-auto">
           <h3 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">Nuestra Misión</h3>
           <p className="text-base sm:text-lg text-muted-foreground text-center text-pretty leading-relaxed">
             Construir una comunidad y un formato de eventos que reúnan personas, recursos y experiencias alrededor de la tecnología, promoviendo espacios de aprendizaje, colaboración e intercambio bajo valores de respeto mutuo y tolerancia.
