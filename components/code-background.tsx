@@ -24,8 +24,8 @@ export function CodeBackground() {
   ]
 
   return (
-    <div className="absolute inset-0 overflow-hidden opacity-20">
-      <div className="absolute inset-0 flex flex-col gap-4 animate-code-scroll">
+    <div aria-hidden="true" className="absolute inset-0 overflow-hidden opacity-20">
+      <div className="absolute inset-0 flex flex-col gap-4 animate-code-scroll motion-reduce:animate-none">
         {[...codeSnippets, ...codeSnippets].map((snippet, i) => (
           <div
             key={i}
