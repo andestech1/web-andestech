@@ -9,10 +9,11 @@ export function EventsSection() {
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 px-2">
-            Próximos <span className="text-primary">Eventos</span>
+            AndesTech <span className="text-primary">Festival 2026</span>
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
-            Unite a nuestros eventos y conecta con la comunidad tech de los Andes
+            Una semana que empieza en las universidades, toma relevancia institucional en la Legislatura y culmina
+            celebrando en grande en Espacio Arizu.
           </p>
         </div>
 
@@ -40,7 +41,7 @@ export function EventsSection() {
             className="w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
           >
             <ImageIcon className="w-5 h-5 mr-2" />
-            Ver Galeria de Eventos
+            Ver Galería de Ediciones Anteriores
           </Button>
           <Button
             size="lg"
@@ -48,7 +49,7 @@ export function EventsSection() {
             onClick={() => window.open("https://lu.ma/andestech", "_blank")}
             className="w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
           >
-            Ver Todos los Eventos
+            Ver Agenda de la Comunidad
           </Button>
         </div>
         

@@ -17,8 +17,7 @@ export function FestivalSection() {
             <span className="text-primary">AndesTech</span> Festival
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto text-pretty px-2">
-            El evento tecnológico más grande del oeste argentino. Una o dos veces al año reunimos a toda la comunidad
-            tech.
+            Cinco días para aprender, compartir y celebrar con la comunidad tecnológica de Mendoza.
           </p>
         </div>
 
@@ -35,29 +34,26 @@ export function FestivalSection() {
                 <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent md:hidden" />
               </div>
               <div className="p-5 sm:p-8 md:p-12 flex flex-col justify-center">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Próxima Edición 2026</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
+                  La semana más grande de la comunidad tech de Mendoza
+                </h3>
                 <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                   <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
                     <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                    <span>Fecha a confirmar - Segundo semestre 2026</span>
+                    <span>Del 13 al 17 de octubre · cinco días para aprender, colaborar y celebrar</span>
                   </div>
                   <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                    <span>Mendoza, Argentina</span>
+                    <span>UTN → Champagnat → Universidad de Mendoza → Legislatura → Espacio Arizu</span>
                   </div>
                   <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
                     <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                    <span>+1500 asistentes esperados</span>
+                    <span>Charlas, talleres, comunidades, stands, foodtrucks y experiencias maker</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    disabled
-                    className="cursor-not-allowed opacity-70"
-                  >
-                    Próximamente más información
+                  <Button size="lg" variant="secondary" asChild>
+                    <Link href="/festival">Conocé el Festival 2026</Link>
                   </Button>
                 </div>
               </div>
@@ -66,11 +62,11 @@ export function FestivalSection() {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-            {[
-              { label: "Charlas", value: "20+" },
-              { label: "Speakers", value: "30+" },
-              { label: "Workshops", value: "8" },
-              { label: "Horas", value: "12" },
+              {[
+              { label: "Días de comunidad", value: "5" },
+              { label: "Sedes", value: "5" },
+              { label: "Ejes de contenido", value: "6" },
+              { label: "Festival central", value: "1" },
             ].map((stat, index) => (
               <Card key={index} className="p-4 sm:p-6 text-center bg-gradient-to-br from-primary/10 to-card border-primary/30">
                 <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">{stat.value}</div>
@@ -88,13 +84,20 @@ export function FestivalSection() {
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-4 gap-6">
               {[
+                {
+                  year: "2025",
+                  attendees: "600+",
+                  talks: "20+",
+                  venue: "Nave Cultural · Mendoza",
+                  image: "/festival-2025.jpg",
+                },
                 {
                   year: "2024",
                   attendees: "500+",
                   talks: "18",
-                  image: "/tech-conference-audience.png",
+                  image: "/festival-2024.jpg",
                 },
                 {
                   year: "2023",
@@ -111,11 +114,17 @@ export function FestivalSection() {
               ].map((edition, index) => (
                 <div key={index} className="group cursor-pointer">
                   <div className="relative h-40 rounded-lg overflow-hidden mb-3">
-                    <img
-                      src={edition.image || "/placeholder.svg"}
-                      alt={`Festival ${edition.year}`}
-                      className="w-full h-full object-cover"
-                    />
+                    {edition.image ? (
+                      <img
+                        src={edition.image}
+                        alt={`Festival ${edition.year}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/10 to-card flex items-center justify-center px-4 text-center">
+                        <span className="text-sm font-semibold text-primary">AndesTech Festival</span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
                     <div className="absolute bottom-2 left-2">
                       <span className="text-2xl font-bold text-primary">{edition.year}</span>
@@ -130,6 +139,12 @@ export function FestivalSection() {
                       <Award className="w-4 h-4" />
                       {edition.talks} charlas
                     </span>
+                    {edition.venue && (
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {edition.venue}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

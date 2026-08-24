@@ -4,10 +4,21 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Home, Calendar, MapPin, Users, Award, ExternalLink, ImageIcon } from "lucide-react"
+import { Home, Calendar, MapPin, Users, Award, ImageIcon } from "lucide-react"
 
 export default function FestivalPage() {
   const editions = [
+    {
+      year: "2025",
+      date: "Segundo semestre de 2025",
+      venue: "Nave Cultural · Las Cubas 201, Ciudad de Mendoza",
+      attendees: "600+",
+      talks: 20,
+      workshops: 8,
+      speakers: 30,
+      image: "/festival-2025.jpg",
+      highlights: ["Charlas técnicas y keynotes", "Workshops prácticos", "Networking y aprendizaje"],
+    },
     {
       year: "2024",
       date: "15-16 Septiembre 2024",
@@ -15,7 +26,7 @@ export default function FestivalPage() {
       talks: 18,
       workshops: 6,
       speakers: 25,
-      image: "/tech-conference-audience.png",
+      image: "/festival-2024.jpg",
       highlights: ["Keynote de líder tech internacional", "Hackathon de 24 horas", "Networking dinner"],
     },
     {
@@ -88,17 +99,12 @@ export default function FestivalPage() {
               <span className="text-primary">AndesTech</span> Festival
             </h1>
             <p className="text-xl text-muted-foreground mb-8 text-pretty">
-              El evento tecnológico más importante del oeste argentino. Dos días completos de charlas, workshops,
-              networking y aprendizaje.
+              La semana más grande de la comunidad tech de Mendoza. Empezamos en las universidades, tomamos
+              relevancia institucional en la Legislatura y culminamos celebrando en grande en Espacio Arizu.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={() => window.open("https://lu.ma/andestech-festival-2025", "_blank")}
-                className="text-lg"
-              >
-                Registrarme para 2025
-                <ExternalLink className="w-4 h-4 ml-2" />
+              <Button size="lg" disabled className="text-lg cursor-not-allowed opacity-70">
+                Próximamente: agenda e inscripciones
               </Button>
               <Button size="lg" variant="outline" asChild className="text-lg bg-transparent">
                 <Link href="/galeria">
@@ -111,28 +117,35 @@ export default function FestivalPage() {
 
           {/* Next Edition Info */}
           <Card className="max-w-5xl mx-auto p-8 md:p-12 bg-gradient-to-br from-card to-card/50 border-primary/30">
-            <h2 className="text-3xl font-bold mb-6 text-center">Próxima Edición 2025</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center">Andes Tech Festival 2026</h2>
+            <p className="text-muted-foreground text-center max-w-3xl mx-auto mb-8 text-pretty">
+              Una experiencia de cinco días para estudiantes, profesionales, empresas, makers y curiosos de la
+              tecnología. Habrá contenidos de informática, IA, electrónica, infraestructura, Web3 y desarrollo de
+              carrera.
+            </p>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <Calendar className="w-5 h-5 text-primary mt-1" />
                   <div>
                     <div className="font-semibold">Fecha</div>
-                    <div className="text-muted-foreground">A confirmar - Segundo semestre 2025</div>
+                    <div className="text-muted-foreground">Del 13 al 17 de octubre</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary mt-1" />
                   <div>
-                    <div className="font-semibold">Lugar</div>
-                    <div className="text-muted-foreground">Centro de Congresos - Mendoza, Argentina</div>
+                    <div className="font-semibold">Sedes</div>
+                    <div className="text-muted-foreground">
+                      UTN, Universidad Champagnat, Universidad de Mendoza, Legislatura y Espacio Arizu
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Users className="w-5 h-5 text-primary mt-1" />
                   <div>
                     <div className="font-semibold">Asistentes Esperados</div>
-                    <div className="text-muted-foreground">+600 personas</div>
+                    <div className="text-muted-foreground">Meta: +500 participantes durante la semana</div>
                   </div>
                 </div>
               </div>
@@ -140,22 +153,31 @@ export default function FestivalPage() {
                 <div className="flex items-start gap-3">
                   <Award className="w-5 h-5 text-primary mt-1" />
                   <div>
-                    <div className="font-semibold">Charlas</div>
-                    <div className="text-muted-foreground">20+ charlas técnicas y keynotes</div>
+                    <div className="font-semibold">13 al 15 de octubre</div>
+                    <div className="text-muted-foreground">
+                      Jornadas de charlas en UTN, Universidad Champagnat y Universidad de Mendoza sobre desarrollo,
+                      IA, electrónica, infraestructura y carrera profesional
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Award className="w-5 h-5 text-primary mt-1" />
                   <div>
-                    <div className="font-semibold">Workshops</div>
-                    <div className="text-muted-foreground">8 workshops prácticos</div>
+                    <div className="font-semibold">16 de octubre</div>
+                    <div className="text-muted-foreground">
+                      Apertura institucional en la Legislatura de Mendoza, con reconocimientos y posicionamiento de
+                      la comunidad
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Award className="w-5 h-5 text-primary mt-1" />
                   <div>
-                    <div className="font-semibold">Speakers</div>
-                    <div className="text-muted-foreground">30+ speakers nacionales e internacionales</div>
+                    <div className="font-semibold">17 de octubre</div>
+                    <div className="text-muted-foreground">
+                      Festival central multi-escenario en Espacio Arizu con charlas, talleres, comunidades, stands,
+                      foodtrucks y actividades para todas las edades
+                    </div>
                   </div>
                 </div>
               </div>
@@ -173,18 +195,25 @@ export default function FestivalPage() {
               <Card key={index} className="overflow-hidden bg-gradient-to-br from-card to-card/50 border-primary/30">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative h-64 md:h-auto">
-                    <img
-                      src={edition.image || "/placeholder.svg"}
-                      alt={`Festival ${edition.year}`}
-                      className="w-full h-full object-cover"
-                    />
+                    {edition.image ? (
+                      <img
+                        src={edition.image}
+                        alt={`Festival ${edition.year}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/10 to-card flex items-center justify-center px-6 text-center">
+                        <span className="text-xl font-semibold text-primary">Nave Cultural · Mendoza</span>
+                      </div>
+                    )}
                     <div className="absolute top-4 left-4 bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <span className="text-2xl font-bold">{edition.year}</span>
                     </div>
                   </div>
                   <div className="p-8">
                     <h3 className="text-2xl font-bold mb-2">AndesTech Festival {edition.year}</h3>
-                    <p className="text-muted-foreground mb-4">{edition.date}</p>
+                    <p className="text-muted-foreground mb-1">{edition.date}</p>
+                    {edition.venue && <p className="text-muted-foreground mb-4">{edition.venue}</p>}
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="bg-primary/10 p-4 rounded-lg">
@@ -248,15 +277,10 @@ export default function FestivalPage() {
           <Card className="max-w-3xl mx-auto p-12 bg-gradient-to-br from-primary/10 to-card border-primary/30">
             <h2 className="text-3xl font-bold mb-4">¿Listo para ser parte del próximo festival?</h2>
             <p className="text-lg text-muted-foreground mb-8">
-              No te pierdas la oportunidad de participar en el evento tecnológico más grande de la región.
+              La agenda, los speakers y las inscripciones se anunciarán próximamente.
             </p>
-            <Button
-              size="lg"
-              onClick={() => window.open("https://lu.ma/andestech-festival-2025", "_blank")}
-              className="text-lg"
-            >
-              Registrarme Ahora
-              <ExternalLink className="w-4 h-4 ml-2" />
+            <Button size="lg" disabled className="text-lg cursor-not-allowed opacity-70">
+              Próximamente
             </Button>
           </Card>
         </div>

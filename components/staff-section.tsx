@@ -93,6 +93,17 @@ export function StaffSection() {
       initials: "EO",
       linkedin: "https://www.linkedin.com/in/eugenia-oyarse-0aab952bb/",
       twitter: "https://x.com/eugeOv19",
+    },
+    {
+      name: "Dino Meschini",
+      role: "Colaborador",
+      description: "Desarrollador backend",
+      avatar: "/dino.png",
+      avatarClass: "object-bottom scale-105",
+      overlayClass: "bg-gradient-to-t from-background via-background/30 to-transparent",
+      initials: "DM",
+      linkedin: "",
+      twitter: "",
     }
   ]
 
@@ -121,10 +132,10 @@ export function StaffSection() {
                   <img 
                     src={member.avatar || "/placeholder.svg"} 
                     alt={member.name}
-                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                    className={`w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 ${member.avatarClass || ""}`}
                   />
                   {/* Overlay gradiente */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                  <div className={`absolute inset-0 ${member.overlayClass || "bg-gradient-to-t from-background via-background/60 to-transparent"}`} />
                 </div>
                 
                 {/* Contenido superpuesto */}
