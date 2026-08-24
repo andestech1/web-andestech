@@ -55,7 +55,7 @@ export function ActivitiesSection() {
           </div>
         </div>
 
-        <Card className="p-6 sm:p-12 bg-gradient-to-br from-primary/10 to-card border-primary/30 max-w-4xl mx-auto">
+        <Card className="mt-6 p-6 sm:mt-8 sm:p-12 bg-gradient-to-br from-primary/10 to-card border-primary/30 max-w-4xl mx-auto">
           <h3 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">Nuestra Misión</h3>
           <p className="text-base sm:text-lg text-muted-foreground text-center text-pretty leading-relaxed">
             Construir una comunidad y un formato de eventos que reúnan personas, recursos y experiencias alrededor de la tecnología, promoviendo espacios de aprendizaje, colaboración e intercambio bajo valores de respeto mutuo y tolerancia.
@@ -73,7 +73,7 @@ La idea es construir entre todos una biblioteca con contenido realmente valioso 
 
           <a
               href="https://app.notion.com/p/Biblioteca-Colaborativa-de-Recursos-Andes-Tech-1720fb0fcefa49b798d0dc9adc0a8311?source=copy_link"
-              className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105"
+              className="mt-6 inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Biblioteca colaborativa
             </a>
@@ -89,7 +89,7 @@ La idea es construir entre todos una biblioteca con contenido realmente valioso 
             </p>
             <a
               href="https://github.com/andestech1/Presentaciones/tree/main/charlas"
-              className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105"
+              className="mt-6 inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Charlas
             </a>
