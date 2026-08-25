@@ -5,14 +5,14 @@ import { ImageIcon } from "lucide-react"
 
 export function EventsSection() {
   return (
-    <section id="eventos" className="relative py-12 sm:py-24 px-4">
+    <section id="eventos" className="relative mt-4 border-t border-primary/30 bg-card/20 py-12 sm:mt-8 sm:py-24 px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 px-2">
-            Próximos <span className="text-primary">Eventos</span>
+            Próximos <span className="text-primary">eventos de la comunidad</span>
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
-            Unite a nuestros eventos y conecta con la comunidad tech de los Andes
+            Encontrá encuentros, charlas y actividades para conectar con la comunidad tech de Mendoza.
           </p>
         </div>
 
@@ -21,13 +21,11 @@ export function EventsSection() {
             <iframe
               src="https://lu.ma/embed/calendar/cal-smEsB0CfhTQVtoo/events"
               width="100%"
-              height="350"
+              height="440"
               frameBorder="0"
-              style={{ border: "none", borderRadius: "8px", background: "transparent" }}
               allowFullScreen
-              aria-hidden="false"
-              tabIndex={0}
-              className="min-h-[300px] sm:min-h-[400px]"
+              title="Calendario de próximos eventos de la comunidad AndesTech"
+              className="min-h-[440px] rounded-lg border-0 bg-transparent sm:min-h-[500px]"
             />
           </div>
         </div>
@@ -37,18 +35,18 @@ export function EventsSection() {
             size="lg"
             variant="outline"
             onClick={() => window.open("https://photos.google.com/albums", "_blank")}
-            className="w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
+            className="min-h-11 w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
           >
             <ImageIcon className="w-5 h-5 mr-2" />
-            Ver Galeria de Eventos
+            Ver Galería de Ediciones Anteriores
           </Button>
           <Button
             size="lg"
             variant="outline"
             onClick={() => window.open("https://lu.ma/andestech", "_blank")}
-            className="w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
+            className="min-h-11 w-full sm:w-auto border-primary/50 hover:bg-primary/10 hover-lift bg-transparent"
           >
-            Ver Todos los Eventos
+            Ver Agenda de la Comunidad
           </Button>
         </div>
         
@@ -60,7 +58,7 @@ export function EventsSection() {
             </p>
             <a
               href="https://github.com/andestech1/Presentaciones/tree/main/charlas"
-              className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105"
+              className="mt-6 inline-flex min-h-11 items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-sm sm:text-base hover:shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Charlas
             </a>
